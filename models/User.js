@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   points: {type: Number, default: 0},
-issues: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Issue' }]
+  // issues: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Issue' }]
 });
 
 module.exports = mongoose.model('User', userSchema);
