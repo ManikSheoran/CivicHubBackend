@@ -11,7 +11,7 @@ const Authority = require('./models/Authority');
 const Issue = require('./models/Issue'); // Assuming Issue model is in './models/Issue'
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 mongoose.connect(process.env.DB_URI)
   .then(() => {
@@ -39,6 +39,10 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
+
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+    }); 
 // Registration Route for Citizen
 app.post('/api/register/citizen', async (req, res) => {
   const { name, email, password } = req.body;
