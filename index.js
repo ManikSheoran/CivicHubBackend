@@ -23,6 +23,12 @@ mongoose.connect(process.env.DB_URI)
 
 app.use(express.json());
 
+const cors = require('cors');
+
+// Allow requests from your frontend
+app.use(cors());
+app.options('*', cors()); // Enable preflight for all routes
+
 // Middleware to authenticate user and extract userId
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
