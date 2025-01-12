@@ -1,4 +1,3 @@
-// Load environment variables only in non-production environments (locally)
 if (process.env.NODE_ENV !== "production") {
   require('dotenv').config();
 }
@@ -10,16 +9,14 @@ const mongoose = require('mongoose');
 const cors = require('cors'); 
 const User = require('./models/User');
 const Authority = require('./models/Authority');
-const Issue = require('./models/Issue'); // Assuming Issue model is in './models/Issue'
+const Issue = require('./models/Issue'); 
 
 // Initialize Express app
 const app = express();
-const port = process.env.PORT || 3000; // Default to 3000 if PORT is not defined
+const port = process.env.PORT || 3000; 
 
-// Enable CORS for all domains
-app.use(cors()); // This allows all origins
+app.use(cors()); 
 
-// Connect to MongoDB
 mongoose.connect(process.env.DB_URI)
   .then(() => {
     console.log("MongoDB connected");
@@ -28,10 +25,9 @@ mongoose.connect(process.env.DB_URI)
     console.error("MongoDB connection error:", err.message);
   });
 
-// Middleware to parse JSON bodies
+  
 app.use(express.json());
 
-// Middleware to authenticate user and extract userId
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
 
