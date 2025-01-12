@@ -1,18 +1,25 @@
+// Load environment variables only in non-production environments (locally)
 if (process.env.NODE_ENV !== "production") {
-    require('dotenv').config();
+  require('dotenv').config();
 }
 
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const cors = require('cors'); // Import the cors package
 const User = require('./models/User');
 const Authority = require('./models/Authority');
 const Issue = require('./models/Issue'); // Assuming Issue model is in './models/Issue'
 
+// Initialize Express app
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000; // Default to 3000 if PORT is not defined
 
+// Enable CORS for all domains
+app.use(cors()); // This allows all origins
+
+// Connect to MongoDB
 mongoose.connect(process.env.DB_URI)
   .then(() => {
     console.log("MongoDB connected");
@@ -21,11 +28,13 @@ mongoose.connect(process.env.DB_URI)
     console.error("MongoDB connection error:", err.message);
   });
 
+// Middleware to parse JSON bodies
 app.use(express.json());
 
 // Middleware to authenticate user and extract userId
 const authenticateToken = (req, res, next) => {
   const token = req.header("Authorization")?.replace("Bearer ", "");
+
   if (!token) {
     return res.status(401).json({ error: "Authorization token is missing" });
   }
@@ -39,10 +48,11 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-
+// Basic route to check if the server is running
 app.get('/', (req, res) => {
-    res.send('Hello World!');
-    }); 
+  res.send('Hello World!');
+});
+
 // Registration Route for Citizen
 app.post('/api/register/citizen', async (req, res) => {
   const { name, email, password } = req.body;
@@ -96,9 +106,15 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
+    // Ensure JWT_SECRET is defined and log if needed for debugging
+    if (!process.env.JWT_SECRET) {
+      console.error("JWT_SECRET is not defined in environment variables");
+      return res.status(500).json({ error: "JWT_SECRET is not defined" });
+    }
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET, // Secret for JWT signing
       { expiresIn: '1h' }
     );
 
@@ -148,6 +164,7 @@ app.get("/api/issues", async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
