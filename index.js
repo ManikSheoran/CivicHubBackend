@@ -22,16 +22,20 @@ mongoose.connect(process.env.DB_URI)
 app.use(express.json());
 
 // CORS setup
-app.use(cors());
+const allowedOrigins = ['https://civichub.netlify.app', 'http://localhost:5173'];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
 
 // Session setup
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'secretkey', 
+    secret: process.env.SESSION_SECRET || 'secretkey', // Replace with a strong secret
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === 'production', 
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
       httpOnly: true,
       maxAge: 60 * 60 * 1000, // 1 hour
     },
